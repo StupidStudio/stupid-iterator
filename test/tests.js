@@ -52,3 +52,37 @@ test('Returns prev or false', function (t) {
 	current = iterator.prevOrFalse(current, collection);
 	t.equal(current, false);
 });
+
+test('Is first', function (t) {
+    t.plan(2);
+	var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
+	t.equal(iterator.isFirst(collection[0], collection), true);
+	t.equal(iterator.isFirst(collection[1], collection), false);
+});
+
+test('Is last', function (t) {
+    t.plan(2);
+	var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
+	t.equal(iterator.isLast(collection[3], collection), true);
+	t.equal(iterator.isLast(collection[2], collection), false);
+});
+
+test('Adds item to collection if doesnt exist', function (t) {
+    t.plan(2);
+    var obj = {name: 'five'};
+	var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
+	iterator.add(obj, collection);
+	t.equal(obj, collection[4]);
+	iterator.add(obj, collection);
+	t.equal(collection.length, 5);
+});
+
+test('Removes item from collection if it exist', function (t) {
+    t.plan(2);
+    var obj = {name: 'five'};
+	var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}, obj];
+	iterator.remove(obj, collection);
+	t.equal(collection.length, 4);
+	iterator.remove(obj, collection);
+	t.equal(collection.length, 4);
+});
