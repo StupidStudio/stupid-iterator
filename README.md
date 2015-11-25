@@ -35,6 +35,7 @@ iterator.isFirst(current, collection);
 iterator.isPrev(current, collection);
 iterator.add(object, collection);
 iterator.remove(object, collection);
+var ite = iterator.create(current, collection);
 
 ```
 
