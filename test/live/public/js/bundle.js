@@ -1,137 +1,248 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @fileoverview Simple event system.
- * @author david@stupid-studio.com (David Adalberth Andersen)
+ * Iterator iterates over a collection
+ * @example var current = iterator.next(current, collection);
  */
-
-/**
- * Event
- * @constructor
- */
-function Event(opts){
+var iterator = {
 	/**
-	 * @define {object} Collection of public methods.
+	 * Get the next item in a collection
+	 * @example var current = iterator.next(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {object} the new current
 	 */
-	var self = {};
-
-	/**
-	 * @define {object} options for the constructor 
-	 */
-	var opts = opts || {};
+ 	next: function(current, collection){
+		return collection[ collection.indexOf(current) + 1 ] || collection[ 0 ];
+	},
 
 	/**
-	 * @define {object} collection the event names as
-	 * an identifyer for later calls
+	 * Get the previous item in a collection
+	 * @example var current = iterator.prev(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {object} the new current
 	 */
-	var event = {};
+	prev: function(current, collection){
+		return collection[ collection.indexOf(current) - 1 ] || collection[ collection.length - 1 ];
+	},
 
 	/**
-	 * @define {object} collection of precalled events
+	 * Get the next item in a collection or return false
+	 * @example var current = iterator.nextOrFalse(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {object | boolean} the new current or false
 	 */
-	var queue = {};
+	nextOrFalse: function(current, collection){
+		return collection[ collection.indexOf(current) + 1 ] || false;
+	},
 
 	/**
-	 * On method for collection the event calls
-	 * @example event.on('custom-event', function(){ //do something });
-	 * @param {string} key A string identifyer
-	 * @param {function} call A callback for the identifyer
-	 * @config {object} event[key] Set object[key] to array if not set
+	 * Get the previous item in a collection or return false
+	 * @example var current = iterator.prevOrFalse(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {object | boolean} the new current or false
 	 */
-	function on(key, call){
-		if(!event[key]) event[key] = [];
-
-		/** add event */
-		addEvent(key, call);
-		
-		/** if the event has been triggered before created, then trigger it now */
-		if(queue[key]) call.apply(null, queue[key]);
-	}
+	prevOrFalse: function(current, collection){
+		return collection[ collection.indexOf(current) - 1 ] || false;
+	},
 
 	/**
-	 * Add event to events and override if it is the same
-	 * @param {string} key A string identifyer
-	 * @param {function} call A callback for the identifyer
+	 * Check if item is the first in the collection
+	 * @example var current = iterator.isFirst(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {boolean}
 	 */
-	function addEvent(key, call){
-		/**
-		 * @define {boolean} if the function is the same,
-		 * boolean will be set to true
-		 */
-		var same = false;
-		/**
-		 * Loop through the events on key
-		 * This is for comparing two anonymous
-		 */
-		for (var i = 0; i < event[key].length; i++) {
-			/** If anonymous function is the same set boolean to true */
-			if(call.toString() === event[key][i].toString()){
-				same = true;
-				/** override the current callback */
-				event[key][i] = call;
-				break;
+	isFirst:function(current, collection){
+		return Boolean(current === collection[ 0 ]);
+	},
+
+	/**
+	 * Check if item is the last in the collection
+	 * @example var current = iterator.isLast(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {boolean}
+	 */
+	isLast: function(current, collection){
+		return Boolean(current === collection[ collection.length - 1 ]);
+	},
+
+	/**
+	 * Add newObject to collection if its not already in it.
+	 * @example iterator.add(newObject, collection);
+	 * @param {object} newObject 
+	 * @param {array} collection The collection
+	 * @return {number} Return the location object have in array
+	 */
+	add: function(newObject, collection){
+		var index = collection.indexOf(newObject);
+		if (index === -1) collection.push(newObject);
+	},
+
+	/**
+	 * Removes object from collection if its in it.
+	 * @example iterator.remove(object, collection);
+	 * @param {object} object 
+	 * @param {array} collection The collection
+	 * @return {number} Return the location object had in array
+	 */
+	remove: function(object, collection){
+        var index = collection.indexOf(object);
+        if (index != -1) collection.splice(index, 1);
+	},
+
+	/**
+	 * Return an object with prefixed current and collection
+	 * @example iterator.create(current, collection);
+	 * @param {object} current The current item (thats in the collection)
+	 * @param {array} collection The collection (that hold the current)
+	 * @return {object} return new object that uses iterator
+	 */
+	create: function(current, collection){
+		return {
+
+			/**
+			 * Get next in collection
+			 * @return {object} The current object
+			 */
+			next: function(){
+				current = iterator.next(current, collection);
+				return current;
+			},
+
+			/**
+			 * Get previous in collection
+			 * @return {object} The current object
+			 */
+			prev: function(){
+				current = iterator.prev(current, collection);
+				return current;
+			},
+
+			/**
+			 * Get previous or false (set current if not false)
+			 * @return {object | boolean} The current object or false
+			 */
+			nextOrFalse: function(){
+				var objectOrFalse = iterator.nextOrFalse(current, collection);
+				current = objectOrFalse || current;
+				return objectOrFalse;
+			},
+
+			/**
+			 * Get next or false (set current if not false)
+			 * @return {object | boolean} The current object or false
+			 */
+			prevOrFalse: function(){
+				var objectOrFalse = iterator.prevOrFalse(current, collection);
+				current = objectOrFalse || current;
+				return objectOrFalse;
+			},
+
+			/**
+			 * Is current first item in array
+			 * @return {boolean} True / false
+			 */
+			isFirst: function(){
+				return iterator.isFirst(current, collection);
+			},
+
+			/**
+			 * Is current last item in array
+			 * @return {boolean} True / false
+			 */
+			isLast: function(){
+				return iterator.isLast(current, collection);
+			},
+
+			/**
+			 * Add object to collection
+			 * @return {object} The current object
+			 */
+			add: function(object){
+				iterator.add(object, collection);
+				return current;
+			},
+
+			/**
+			 * Remove object from collection
+			 * Set current to new object if current if removed
+			 * @return {object} The current object
+			 */
+			remove: function(object){
+
+				/**
+				 * If object is current do something
+				 */
+				if(object === current){
+
+					/**
+					 * If current is first, set current to the next item
+					 * Else set current to previous item
+					 */
+					if(iterator.isFirst(current, collection)){
+						current = iterator.next(current, collection);	
+					}else{
+						current = iterator.prev(current, collection);
+					}
+				}
+
+				/** Return object from collection */
+				iterator.remove(object, collection);
+
+				return current;
+			},
+
+			/**
+			 * Set object to current
+			 * @return {object} The current object
+			 */
+			set: function(object){
+				current = object;
+				return current;
+			},
+
+			/**
+			 * Get the current object
+			 * @return {object} The current object
+			 */
+			get: function(){
+				return current;
 			}
 		};
-		/** If the functions isnt the same, push to call stack */
-		if(!same) event[key].push(call);
 	}
-
-	/**
-	 * Trigger the event
-	 * @example event.trigger(key, params)
-	 * @param {string} key The key for event objet
-	 */
-	function trigger(key){
-		var events = event[key];
-		/**
-		 * @define {array} takes the arguments and removes the first param
-		 */
-		var args = Array.prototype.slice.call(arguments).slice(1);
-
-		/** If first argument is an array, pass it as argument */
-		if(args.length && args[0].constructor == Array) args = args[0];
-		
-		if(events){
-			/** Trigger the events by the current key */
-			for (var i = 0; i < events.length; i++) {
-				events[i].apply(null, args);
-			};
-		}else{
-			/**
-			 * If the trigger method is call before any key is added
-			 * save the key and params for to be called later
-			 */
-			queue[key] = args;
-		}
-	}
-
-	/**
-	 * Public methods
-	 * @public {function}
-	 */
-	self.on = on;
-	self.trigger = trigger;
-
-	/**
-	 * @return {object} return public methods
-	 */
-	return self;
 }
 
 /** @export */
-module.exports = Event;
+module.exports = iterator;
 },{}],2:[function(require,module,exports){
-var Event = require('../../event');
-var event = Event();
+var iterator = require('../../iterator');
 
-var event = Event();
-	var arg1 = 'arg one';
-	var arg2 = {text: 'arg two'};
-	var arg3 = ['arg one'];
-	var args = [arg1]
-	event.on('event-string', function(param1, param2, param3){
-		console.log(param1, arg1);
-	});
-	event.trigger('event-string', args);
-	event.trigger('event-string', arg1, arg2, arg3);
+var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
+var newObject = {name:'five'};
+var current = collection[0];
+var ite = iterator.create(current, collection);
+console.log(ite.set(collection[3]));
+console.log("Current:", ite.get());
+console.log(ite.remove(collection[3]), collection.length);
+// console.log(ite.next(), collection.length);
+// console.log(ite.next(), collection.length);
+// console.log(ite.prev(), collection.length);
+// console.log(ite.next(), collection.length);
+// console.log(ite.nextOrFalse(), collection.length);
+// console.log(ite.add(newObject), collection.length);
+// console.log(ite.next(), collection.length);
+// console.log(ite.remove(newObject), collection.length);
+// console.log(ite.next(), collection.length);
+// console.log(ite.set(collection[2]), collection.length);
 
-},{"../../event":1}]},{},[2]);
+// iterator.nextOrFalse(current, collection);
+// iterator.prevOrFalse(current, collection);
+// iterator.isFirst(current, collection);
+// iterator.isPrev(current, collection);
+// iterator.add(object, collection);
+// iterator.remove(object, collection);
+},{"../../iterator":1}]},{},[2]);
