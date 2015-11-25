@@ -4,6 +4,7 @@ var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
 var newObject = {name:'five'};
 var current = collection[0];
 var ite = iterator.create(current, collection);
+
 console.log(ite.set(collection[3]));
 console.log("Current:", ite.get());
 console.log(ite.remove(collection[3]), collection.length);
