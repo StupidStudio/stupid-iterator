@@ -150,7 +150,6 @@ test('Create(): add, remove', function (t) {
 	t.equal(collection.length, 4);
 	ite.remove(object);
 	t.equal(collection.length, 4);
-
 });
 
 
