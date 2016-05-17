@@ -91,6 +91,14 @@ test('Removes item from collection if it exist', function (t) {
 	t.equal(collection.length, 4);
 });
 
+test('Returns index', function (t) {
+    t.plan(2);
+    var obj = {name: 'five'};
+	var collection = [{name:'one'}, {name:'two'}, {name:'three'}, {name:'four'}];
+	t.equal(iterator.add(obj, collection), true);
+	t.equal(iterator.add(obj, collection), false);
+});
+
 
 /**
  * Testing the iterator.create() object

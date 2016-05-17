@@ -79,6 +79,7 @@ var iterator = {
 	add: function(newObject, collection){
 		var index = collection.indexOf(newObject);
 		if (index === -1) collection.push(newObject);
+		return index === -1 ? true : false;
 	},
 
 	/**
@@ -91,6 +92,7 @@ var iterator = {
 	remove: function(object, collection){
         var index = collection.indexOf(object);
         if (index != -1) collection.splice(index, 1);
+        return index != -1 ? true : false;
 	},
 
 	/**
